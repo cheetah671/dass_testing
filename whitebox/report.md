@@ -205,4 +205,16 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 15: Remove unused BOARD_SIZE import in dice.py to fix W0611 (unused-import)`
 
+## Iteration 16 - `game.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Warning fixed in this iteration:
+	- `C0114`: missing module docstring
+- Changes made:
+	- Added module-level docstring: `"""Core game loop and turn-by-turn rules processing for MoneyPoly."""`
+- Score change: `8.70/10 -> 8.73/10`
+- Commit message used:
+	- `Iteration 16: Add module docstring in game.py to fix C0114 (missing-module-docstring)`
+
 

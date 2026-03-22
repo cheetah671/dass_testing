@@ -1,3 +1,5 @@
+"""Core game loop and turn-by-turn rules processing for MoneyPoly."""
+
 import os
 
 from moneypoly.config import (
