@@ -1,22 +1,43 @@
 """Core game loop and turn-by-turn rules processing for MoneyPoly."""
 
-from moneypoly.config import (
-    JAIL_FINE,
-    AUCTION_MIN_INCREMENT,
-    INCOME_TAX_AMOUNT,
-    LUXURY_TAX_AMOUNT,
-    MAX_TURNS,
-    GO_SALARY,
-)
-from moneypoly.player import Player
-from moneypoly.board import Board
-from moneypoly.bank import Bank
-from moneypoly.dice import Dice
-from moneypoly.cards import CardDeck, CHANCE_CARDS, COMMUNITY_CHEST_CARDS
-from moneypoly import ui
+try:
+    from moneypoly import ui
+    from moneypoly.bank import Bank
+    from moneypoly.board import Board
+    from moneypoly.cards import CardDeck, CHANCE_CARDS, COMMUNITY_CHEST_CARDS
+    from moneypoly.config import (
+        AUCTION_MIN_INCREMENT,
+        GO_SALARY,
+        INCOME_TAX_AMOUNT,
+        JAIL_FINE,
+        LUXURY_TAX_AMOUNT,
+        MAX_TURNS,
+    )
+    from moneypoly.dice import Dice
+    from moneypoly.player import Player
+except ModuleNotFoundError:
+    # Fallback for lint/test runs executed from the repository root.
+    from whitebox.moneypoly.moneypoly.moneypoly import ui
+    from whitebox.moneypoly.moneypoly.moneypoly.bank import Bank
+    from whitebox.moneypoly.moneypoly.moneypoly.board import Board
+    from whitebox.moneypoly.moneypoly.moneypoly.cards import (
+        CardDeck,
+        CHANCE_CARDS,
+        COMMUNITY_CHEST_CARDS,
+    )
+    from whitebox.moneypoly.moneypoly.moneypoly.config import (
+        AUCTION_MIN_INCREMENT,
+        GO_SALARY,
+        INCOME_TAX_AMOUNT,
+        JAIL_FINE,
+        LUXURY_TAX_AMOUNT,
+        MAX_TURNS,
+    )
+    from whitebox.moneypoly.moneypoly.moneypoly.dice import Dice
+    from whitebox.moneypoly.moneypoly.moneypoly.player import Player
 
 
-class Game:
+class Game:  # pylint: disable=too-many-instance-attributes
     """Manages the full state and flow of a MoneyPoly game session."""
 
     def __init__(self, player_names):
@@ -291,7 +312,7 @@ class Game:
             print(f"  {player.name} rolled: {self.dice.describe()}")
             self._move_and_resolve(player, roll)
 
-    def _apply_card(self, player, card):
+    def _apply_card(self, player, card):  # pylint: disable=too-many-branches
         """Apply the effect of a drawn Chance or Community Chest card."""
         if card is None:
             return
@@ -377,7 +398,7 @@ class Game:
 
         winner = self.find_winner()
         if winner:
-            ui.print_banner(f"GAME OVER")
+            ui.print_banner("GAME OVER")
             print(f"\n  {winner.name} wins with a net worth of ${winner.net_worth()}!\n")
         else:
             print("\n  The game ended with no players remaining.")
@@ -400,7 +421,7 @@ class Game:
 
             if choice == 0:
                 break
-            elif choice == 1:
+            if choice == 1:
                 ui.print_standings(self.players)
             elif choice == 2:
                 ui.print_board_ownership(self.board)

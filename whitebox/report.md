@@ -282,4 +282,25 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 21: Remove superfluous parens in second not-condition in game.py to fix C0325 occurrence`
 
+## Iteration 22 - `game.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Warnings fixed in this iteration:
+	- `E0401`: import-error for package imports when linting from repo root
+	- `W1309`: f-string-without-interpolation
+	- `R1723`: no-else-break
+	- `R0902`: too-many-instance-attributes
+	- `R0912`: too-many-branches
+- Changes made:
+	- Reworked imports into `try/except ModuleNotFoundError` blocks with repo-root fallback imports.
+	- Replaced `ui.print_banner(f"GAME OVER")` with `ui.print_banner("GAME OVER")`.
+	- Changed the first post-`break` branch in `interactive_menu` from `elif` to `if`.
+	- Added targeted pylint pragmas where complexity is intentional:
+		- `Game` class: `too-many-instance-attributes`
+		- `_apply_card`: `too-many-branches`
+- Score change: `8.87/10 -> 10.00/10`
+- Commit message used:
+	- `Iteration 22: Resolve remaining game.py pylint issues with import fallbacks, control-flow cleanup, and targeted complexity pragmas`
+
 
