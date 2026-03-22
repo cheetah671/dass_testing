@@ -382,4 +382,16 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 28: Add targeted class pragma in player.py to fix R0902 (too-many-instance-attributes)`
 
+## Iteration 29 - `property.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/property.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/property.py`
+- Warning fixed in this iteration:
+	- `C0114`: missing module docstring
+- Changes made:
+	- Added module-level docstring: `"""Property and property-group domain models for MoneyPoly."""`
+- Score change: `8.98/10 -> 9.15/10`
+- Commit message used:
+	- `Iteration 29: Add module docstring in property.py to fix C0114 (missing-module-docstring)`
+
 
