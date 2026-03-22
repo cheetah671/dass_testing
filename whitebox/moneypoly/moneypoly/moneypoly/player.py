@@ -12,7 +12,7 @@ except ModuleNotFoundError:
     )
 
 
-class Player:
+class Player:  # pylint: disable=too-many-instance-attributes
     """Represents a single player in a MoneyPoly game."""
 
     def __init__(self, name, balance=STARTING_BALANCE):
