@@ -5,7 +5,7 @@ class Property:
 
     FULL_GROUP_MULTIPLIER = 2
 
-    def __init__(self, name, position, price, base_rent, group=None):
+    def __init__(self, name, position, price, base_rent, group=None):  # pylint: disable=too-many-arguments
         self.name = name
         self.position = position
         self.price = price
