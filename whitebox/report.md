@@ -94,4 +94,19 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 7: Replace singleton comparison in board.py to fix C0121 (singleton-comparison)`
 
+## Iteration 8 - `board.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/board.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/board.py`
+- Warning fixed in this iteration:
+	- `E0401`: unable to import `moneypoly.property` during repo-root lint run
+- Changes made:
+	- Added fallback import block for property types:
+		- Primary: `from moneypoly.property import Property, PropertyGroup`
+		- Fallback: `from whitebox.moneypoly.moneypoly.moneypoly.property import Property, PropertyGroup`
+	- Kept import ordering tidy so no new style warnings remain.
+- Score change: `7.44/10 -> 8.81/10`
+- Commit message used:
+	- `Iteration 8: Add property import fallback in board.py to fix E0401 (import-error) from repo-root pylint run`
+
 

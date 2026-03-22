@@ -1,6 +1,5 @@
 """Board layout and tile lookup helpers for the MoneyPoly game."""
 
-from moneypoly.property import Property, PropertyGroup
 from moneypoly.config import (
     JAIL_POSITION,
     GO_TO_JAIL_POSITION,
@@ -8,6 +7,14 @@ from moneypoly.config import (
     INCOME_TAX_POSITION,
     LUXURY_TAX_POSITION,
 )
+try:
+    from moneypoly.property import Property, PropertyGroup
+except ModuleNotFoundError:
+    # Fallback for lint/test runs executed from the repository root.
+    from whitebox.moneypoly.moneypoly.moneypoly.property import (
+        Property,
+        PropertyGroup,
+    )
 
 # Maps fixed board positions to their tile type.
 # Properties are looked up separately via get_property_at().
