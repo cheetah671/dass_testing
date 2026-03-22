@@ -1,6 +1,6 @@
 """Property and property-group domain models for MoneyPoly."""
 
-class Property:
+class Property:  # pylint: disable=too-many-instance-attributes
     """Represents a single purchasable property tile on the MoneyPoly board."""
 
     FULL_GROUP_MULTIPLIER = 2
