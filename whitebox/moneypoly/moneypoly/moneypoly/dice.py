@@ -1,3 +1,5 @@
+"""Dice rolling utilities for movement and doubles tracking in MoneyPoly."""
+
 import random
 from moneypoly.config import BOARD_SIZE
 

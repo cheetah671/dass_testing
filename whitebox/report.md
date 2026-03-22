@@ -152,4 +152,16 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 11: Add module docstring in config.py to fix C0114 (missing-module-docstring)`
 
+## Iteration 12 - `dice.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/dice.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/dice.py`
+- Warning fixed in this iteration:
+	- `C0114`: missing module docstring
+- Changes made:
+	- Added module-level docstring: `"""Dice rolling utilities for movement and doubles tracking in MoneyPoly."""`
+- Score change: `7.04/10 -> 7.41/10`
+- Commit message used:
+	- `Iteration 12: Add module docstring in dice.py to fix C0114 (missing-module-docstring)`
+
 
