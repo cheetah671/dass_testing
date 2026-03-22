@@ -243,4 +243,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 18: Remove unused GO_TO_JAIL_POSITION import in game.py to fix W0611 (unused-import)`
 
+## Iteration 19 - `game.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Warning fixed in this iteration:
+	- `C0304`: missing final newline
+- Changes made:
+	- Added trailing newline at end of `game.py`.
+	- No code logic changes.
+- Score change: `8.78/10 -> 8.81/10`
+- Commit message used:
+	- `Iteration 19: Add final newline in game.py to fix C0304 (missing-final-newline)`
+
 
