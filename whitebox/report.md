@@ -70,4 +70,16 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 5: Add fallback config import in bank.py to fix E0401 (import-error) from repo-root pylint run`
 
+## Iteration 6 - `board.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/board.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/board.py`
+- Warning fixed in this iteration:
+	- `C0114`: missing module docstring
+- Changes made:
+	- Added module-level docstring: `"""Board layout and tile lookup helpers for the MoneyPoly game."""`
+- Score change: `6.92/10 -> 7.18/10`
+- Commit message used:
+	- `Iteration 6: Add module docstring in board.py to fix C0114 (missing-module-docstring)`
+
 

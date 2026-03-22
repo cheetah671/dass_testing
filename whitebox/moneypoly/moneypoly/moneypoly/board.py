@@ -1,3 +1,5 @@
+"""Board layout and tile lookup helpers for the MoneyPoly game."""
+
 from moneypoly.property import Property, PropertyGroup
 from moneypoly.config import (
     JAIL_POSITION,
