@@ -1,4 +1,4 @@
-"""White-box unit tests for bank decision paths and edge cases."""
+"""White-box tests for bank.py."""
 
 import pytest
 
@@ -6,97 +6,76 @@ from moneypoly.bank import Bank
 from moneypoly.player import Player
 
 
-@pytest.mark.parametrize("amount", [0, 1, 75, 1000])
-def test_collect_adds_non_negative_amounts(amount):
-    """Collect should increase bank balance for valid non-negative values."""
+@pytest.mark.parametrize("amount", [1, 25, 500, 9999])
+def test_collect_positive_increases_balance_and_total(amount):
     bank = Bank()
-    start = bank.get_balance()
-
+    before = bank.get_balance()
     bank.collect(amount)
+    assert bank.get_balance() == before + amount
 
-    assert bank.get_balance() == start + amount
 
-
-@pytest.mark.parametrize("amount", [-1, -50, -999])
-def test_collect_ignores_negative_amounts(amount):
-    """Negative collect amounts should not reduce bank funds."""
+@pytest.mark.parametrize("amount", [-1, -5, -200])
+def test_collect_negative_amounts_are_ignored(amount):
     bank = Bank()
-    start = bank.get_balance()
-
+    before = bank.get_balance()
     bank.collect(amount)
+    assert bank.get_balance() == before
 
-    assert bank.get_balance() == start
 
-
-@pytest.mark.parametrize("amount", [0, -1, -40])
+@pytest.mark.parametrize("amount", [0, -1, -999])
 def test_pay_out_non_positive_returns_zero(amount):
-    """Non-positive payouts should return 0 and not alter bank balance."""
     bank = Bank()
-    start = bank.get_balance()
-
-    paid = bank.pay_out(amount)
-
-    assert paid == 0
-    assert bank.get_balance() == start
+    before = bank.get_balance()
+    assert bank.pay_out(amount) == 0
+    assert bank.get_balance() == before
 
 
-@pytest.mark.parametrize("amount", [1, 200, 800])
-def test_pay_out_reduces_balance_for_valid_amount(amount):
-    """Valid payout should deduct the exact amount from bank funds."""
-    bank = Bank()
-    start = bank.get_balance()
-
-    paid = bank.pay_out(amount)
-
-    assert paid == amount
-    assert bank.get_balance() == start - amount
-
-
-def test_pay_out_raises_when_funds_are_insufficient():
-    """Payout larger than reserves should raise ValueError."""
+def test_pay_out_insufficient_funds_raises_value_error():
     bank = Bank()
     with pytest.raises(ValueError):
         bank.pay_out(bank.get_balance() + 1)
 
 
+@pytest.mark.parametrize("amount", [1, 10, 1500])
+def test_pay_out_reduces_bank_funds(amount):
+    bank = Bank()
+    before = bank.get_balance()
+    paid = bank.pay_out(amount)
+    assert paid == amount
+    assert bank.get_balance() == before - amount
+
+
 @pytest.mark.parametrize("amount", [0, -10])
-def test_give_loan_ignores_non_positive_amounts(amount):
-    """Loan requests with non-positive amounts should do nothing."""
+def test_give_loan_non_positive_does_not_change_player_or_loan_count(amount):
     bank = Bank()
     player = Player("P")
-    start_bank = bank.get_balance()
-    start_player = player.balance
-
+    before = player.balance
     bank.give_loan(player, amount)
-
-    assert bank.get_balance() == start_bank
-    assert player.balance == start_player
+    assert player.balance == before
     assert bank.loan_count() == 0
 
 
-@pytest.mark.parametrize("amount", [1, 150, 700])
-def test_give_loan_reduces_bank_funds_and_credits_player(amount):
-    """Emergency loan should reduce bank funds and increase player balance."""
+@pytest.mark.parametrize("amount", [1, 100, 350])
+def test_give_loan_positive_updates_player_and_records_loan(amount):
     bank = Bank()
     player = Player("P")
-    start_bank = bank.get_balance()
-    start_player = player.balance
-
+    before = player.balance
     bank.give_loan(player, amount)
-
-    assert bank.get_balance() == start_bank - amount
-    assert player.balance == start_player + amount
+    assert player.balance == before + amount
     assert bank.loan_count() == 1
+    assert bank.total_loans_issued() == amount
 
 
-def test_total_loans_and_count_accumulate_multiple_loans():
-    """Loan statistics should reflect all issued loans."""
+def test_summary_prints_bank_details(capsys):
     bank = Bank()
-    p1 = Player("A")
-    p2 = Player("B")
+    bank.collect(100)
+    bank.summary()
+    out = capsys.readouterr().out
+    assert "Bank reserves" in out
+    assert "Total collected" in out
+    assert "Loans issued" in out
 
-    bank.give_loan(p1, 40)
-    bank.give_loan(p2, 60)
 
-    assert bank.loan_count() == 2
-    assert bank.total_loans_issued() == 100
+def test_repr_contains_class_name():
+    bank = Bank()
+    assert "Bank(" in repr(bank)

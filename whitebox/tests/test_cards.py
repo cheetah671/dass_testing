@@ -1,88 +1,94 @@
-"""White-box unit tests for card deck behaviors."""
+"""White-box tests for cards.py."""
 
-from moneypoly.cards import CardDeck, CHANCE_CARDS, COMMUNITY_CHEST_CARDS
+import pytest
+
+from moneypoly.cards import (
+    CHANCE_CARDS,
+    COMMUNITY_CHEST_CARDS,
+    CardDeck,
+)
 
 
-def test_draw_cycles_through_deck():
-    """Draw should loop back to start after reaching end of deck."""
-    deck = CardDeck([{"id": 1}, {"id": 2}])
+@pytest.mark.parametrize("card", CHANCE_CARDS + COMMUNITY_CHEST_CARDS)
+def test_all_cards_have_required_shape(card):
+    assert set(card.keys()) == {"description", "action", "value"}
+    assert isinstance(card["description"], str)
+    assert isinstance(card["action"], str)
+    assert isinstance(card["value"], int)
 
-    assert deck.draw()["id"] == 1
-    assert deck.draw()["id"] == 2
-    assert deck.draw()["id"] == 1
+
+def test_draw_cycles_through_cards_in_order():
+    cards = [{"description": "a", "action": "collect", "value": 1}, {"description": "b", "action": "pay", "value": 2}]
+    deck = CardDeck(cards)
+    assert deck.draw()["description"] == "a"
+    assert deck.draw()["description"] == "b"
+    assert deck.draw()["description"] == "a"
 
 
 def test_peek_does_not_advance_index():
-    """peek should show next card without changing draw order."""
-    deck = CardDeck([{"id": 10}, {"id": 20}])
-
-    assert deck.peek()["id"] == 10
-    assert deck.peek()["id"] == 10
-    assert deck.draw()["id"] == 10
-
-
-def test_empty_deck_draw_and_peek_return_none():
-    """Empty deck should safely return None for draw and peek."""
-    deck = CardDeck([])
-
-    assert deck.draw() is None
-    assert deck.peek() is None
-
-
-def test_reshuffle_resets_index(monkeypatch):
-    """reshuffle should call random.shuffle and reset index to 0."""
-    called = {"value": False}
-
-    def fake_shuffle(values):
-        called["value"] = True
-        values.reverse()
-
-    monkeypatch.setattr("moneypoly.cards.random.shuffle", fake_shuffle)
-
-    deck = CardDeck([{"id": 1}, {"id": 2}, {"id": 3}])
-    deck.draw()
-    deck.draw()
-    assert deck.index == 2
-
-    deck.reshuffle()
-
-    assert called["value"] is True
+    cards = [{"description": "a", "action": "collect", "value": 1}]
+    deck = CardDeck(cards)
+    assert deck.peek()["description"] == "a"
+    assert deck.peek()["description"] == "a"
     assert deck.index == 0
 
 
-def test_cards_remaining_before_and_after_wrap():
-    """cards_remaining should track remaining cards until cycle point."""
-    deck = CardDeck([{"id": 1}, {"id": 2}, {"id": 3}])
-
-    assert deck.cards_remaining() == 3
-    deck.draw()
-    assert deck.cards_remaining() == 2
-    deck.draw()
-    assert deck.cards_remaining() == 1
-    deck.draw()
-    assert deck.cards_remaining() == 3
-
-
-def test_len_and_repr_reflect_deck_state():
-    """Magic methods should expose card count and next index state."""
-    deck = CardDeck([{"id": 1}, {"id": 2}])
+def test_reshuffle_resets_index(monkeypatch):
+    cards = [{"description": "a", "action": "collect", "value": 1}, {"description": "b", "action": "pay", "value": 2}]
+    deck = CardDeck(cards)
     deck.draw()
 
-    assert len(deck) == 2
-    assert "CardDeck(2 cards" in repr(deck)
+    called = {"ok": False}
+
+    def fake_shuffle(values):
+        called["ok"] = True
+        values.reverse()
+
+    monkeypatch.setattr("moneypoly.cards.random.shuffle", fake_shuffle)
+    deck.reshuffle()
+
+    assert called["ok"] is True
+    assert deck.index == 0
 
 
-def test_chance_cards_have_required_fields():
-    """Chance card definitions should include description/action/value."""
-    for card in CHANCE_CARDS:
-        assert "description" in card
-        assert "action" in card
-        assert "value" in card
+@pytest.mark.parametrize(
+    "draw_count,remaining",
+    [
+        (0, 3),
+        (1, 2),
+        (2, 1),
+        (3, 3),
+        (4, 2),
+    ],
+)
+def test_cards_remaining_cycles_correctly(draw_count, remaining):
+    cards = [
+        {"description": "a", "action": "collect", "value": 1},
+        {"description": "b", "action": "collect", "value": 1},
+        {"description": "c", "action": "collect", "value": 1},
+    ]
+    deck = CardDeck(cards)
+    for _ in range(draw_count):
+        deck.draw()
+    assert deck.cards_remaining() == remaining
 
 
-def test_community_chest_cards_have_required_fields():
-    """Community Chest cards should include description/action/value."""
-    for card in COMMUNITY_CHEST_CARDS:
-        assert "description" in card
-        assert "action" in card
-        assert "value" in card
+def test_empty_deck_draw_returns_none():
+    deck = CardDeck([])
+    assert deck.draw() is None
+
+
+def test_empty_deck_peek_returns_none():
+    deck = CardDeck([])
+    assert deck.peek() is None
+
+
+def test_empty_deck_cards_remaining_is_zero():
+    deck = CardDeck([])
+    assert deck.cards_remaining() == 0
+
+
+def test_len_and_repr_work_for_non_empty_deck():
+    deck = CardDeck(CHANCE_CARDS)
+    assert len(deck) == len(CHANCE_CARDS)
+    assert "CardDeck(" in repr(deck)

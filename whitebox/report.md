@@ -495,170 +495,235 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Note:
 	- This confirms all iterative fixes (Iterations 1 through 36) produce a clean lint result across the MoneyPoly entrypoint and all package modules.
 
-1.3 White-Box Test Design and Error Baseline
+## 1.3 White-Box Test Design (Updated After Suite Refactor)
 
 - Goal:
-	- Design an extensive white-box test suite (about 100 tests) to cover decision branches, variable states, and edge cases before fixing logic bugs.
-	- Document all observed failures first, then fix defects in later `Error #` iterations.
-- Test suite files:
-	- `whitebox/tests/conftest.py`
-	- `whitebox/tests/test_bank.py`
-	- `whitebox/tests/test_board.py`
-	- `whitebox/tests/test_cards.py`
-	- `whitebox/tests/test_dice.py`
-	- `whitebox/tests/test_game_logic.py`
-	- `whitebox/tests/test_player.py`
-	- `whitebox/tests/test_property.py`
-- Test design summary:
-	- `bank` tests: validate collect/pay/loan branches, boundary amounts, and bank-player money flow.
-	- `board` tests: validate tile lookup, purchasable filtering, ownership paths, and fallback behavior.
-	- `cards` tests: validate deck schema, draw behavior, shuffle/reset consistency.
-	- `dice` tests: validate roll bounds, doubles logic, and internal state transitions.
-	- `player` tests: validate movement wraparound, salary collection, jail flags, and balance/property state.
-	- `property` tests: validate mortgage/unmortgage paths, rent behavior, and group ownership logic.
-	- `game_logic` tests: validate integration flows for buy/rent/trade/winner/card actions and branch decisions.
-- Commands run:
-	- `python -m pytest whitebox/tests -q`
-	- `python -m coverage run -m pytest whitebox/tests -q || true`
-	- `python -m coverage report -m`
-- Baseline result:
-	- `118` tests executed
-	- `105` passed, `13` failed
-	- This is expected for defect discovery in 1.3.
+	- Keep 1.3 focused on branch/decision-path testing before bug fixes.
+	- Document the full current failure state after test-suite restructuring and import normalization.
 
-Expanded Error Discovery (Target ~20 Failing Tests)
+- Test suite changes in this update:
+	- Imports in tests were normalized from `moneypoly.moneypoly.moneypoly...` to `moneypoly...`.
+	- `whitebox/tests/conftest.py` now bootstraps `sys.path` to load package modules consistently across terminal contexts.
+	- Additional decision-path and integration files are now part of active 1.3 coverage:
+		- `whitebox/tests/test_game.py`
+		- `whitebox/tests/test_game_decision_path.py`
+		- `whitebox/tests/test_integration.py`
+		- `whitebox/tests/test_integration_decision_path.py`
+		- `whitebox/tests/test_integration_extra.py`
+		- `whitebox/tests/test_remaining_decision_path.py`
 
-- Goal:
-	- Add 10 additional white-box tests and raise failure inventory to around 20 before starting any source-code fixes.
-	- Document every current failing test case in the report.
-- New test file added:
-	- `whitebox/tests/test_error_discovery_additional.py` (10 new tests)
 - Command run:
-	- `python -m pytest whitebox/tests -q`
-- Result:
-	- `209` tests executed
-	- `189` passed, `20` failed
+	- `pytest whitebox/tests -q`
 
-### Complete Failure Inventory (20/20)
+- Latest baseline result:
+	- `288` tests executed
+	- `251` passed, `37` failed
 
-1. Error 1 - `whitebox/tests/test_bank.py::test_collect_ignores_negative_amounts[-1]`
-	- Why this test is needed (simple): even a tiny negative amount must never reduce bank money by mistake.
-	- Observed failure: bank funds decreased after `collect(-1)`.
-	- Logical issue found: `Bank.collect()` adds the value directly without validating that it is positive.
-	- Detailed explanation: a method named `collect` should only move money into the bank. Accepting negative values lets callers silently withdraw money through the wrong API, breaking accounting rules and making balances unreliable.
+### Updated Error Inventory (37/37)
 
-2. Error 2 - `whitebox/tests/test_bank.py::test_collect_ignores_negative_amounts[-50]`
-	- Why this test is needed (simple): medium-size negative inputs should be blocked just like tiny ones.
-	- Observed failure: bank funds decreased after `collect(-50)`.
-	- Logical issue found: no guard exists for negative collection amounts.
-	- Detailed explanation: this confirms the bug is not a one-off corner value. The function behavior is consistently wrong for negative inputs and can drain bank reserves through invalid transactions.
+1. Error 1 - `whitebox/tests/test_bank.py::test_collect_negative_amounts_are_ignored[-1]`
+	- Why this test is needed (simple): negative collection should never reduce bank money.
+	- Observed failure: bank balance decreases after `collect(-1)`.
+	- Logical issue found: `Bank.collect()` accepts negative values without validation.
 
-3. Error 3 - `whitebox/tests/test_bank.py::test_collect_ignores_negative_amounts[-999]`
-	- Why this test is needed (simple): large invalid amounts must also be rejected to protect bank integrity.
-	- Observed failure: bank funds decreased after `collect(-999)`.
-	- Logical issue found: negative values are treated as valid collection events.
-	- Detailed explanation: the same validation gap scales to large amounts, so a single bad call can cause major balance corruption and produce unrealistic game economics.
+2. Error 2 - `whitebox/tests/test_bank.py::test_collect_negative_amounts_are_ignored[-5]`
+	- Why this test is needed (simple): invalid medium negative amounts must also be blocked.
+	- Observed failure: bank balance decreases after `collect(-5)`.
+	- Logical issue found: same missing negative-value guard in `collect`.
 
-4. Error 4 - `whitebox/tests/test_bank.py::test_give_loan_reduces_bank_funds_and_credits_player[1]`
-	- Why this test is needed (simple): even the smallest loan should come from bank reserves.
-	- Observed failure: player receives loan, bank balance unchanged.
-	- Logical issue found: `give_loan()` credits player balance but does not debit bank funds.
-	- Detailed explanation: this creates money from nowhere. The loan system should transfer value from bank to player, not increase total money supply.
+3. Error 3 - `whitebox/tests/test_bank.py::test_collect_negative_amounts_are_ignored[-200]`
+	- Why this test is needed (simple): large invalid negative values must not corrupt funds.
+	- Observed failure: bank balance decreases after `collect(-200)`.
+	- Logical issue found: invalid signed input path still mutates `_funds`.
 
-5. Error 5 - `whitebox/tests/test_bank.py::test_give_loan_reduces_bank_funds_and_credits_player[150]`
-	- Why this test is needed (simple): standard loan amounts must follow the same transfer rule.
-	- Observed failure: player receives loan, bank balance unchanged.
-	- Logical issue found: loan path records issuance but does not remove funds from bank.
-	- Detailed explanation: medium-value loans repeatedly inflate player funds while preserving bank funds, causing systematic economy imbalance.
+4. Error 4 - `whitebox/tests/test_cards.py::test_empty_deck_cards_remaining_is_zero`
+	- Why this test is needed (simple): empty decks should be safe and report zero remaining cards.
+	- Observed failure: `ZeroDivisionError` in `cards_remaining()`.
+	- Logical issue found: modulo/division performed with `len(self.cards)` when deck is empty.
 
-6. Error 6 - `whitebox/tests/test_bank.py::test_give_loan_reduces_bank_funds_and_credits_player[700]`
-	- Why this test is needed (simple): high loan amounts should still obey bank-debit behavior.
-	- Observed failure: player receives loan, bank balance unchanged.
-	- Logical issue found: missing debit logic affects all positive loan sizes.
-	- Detailed explanation: this confirms severity at larger values. Big loans can be issued indefinitely without bank depletion, invalidating risk and scarcity mechanics.
+5. Error 5 - `whitebox/tests/test_game.py::test_move_and_resolve_dispatches_tile_handlers[go_to_jail-jail]`
+	- Why this test is needed (simple): tile dispatch should call a dedicated jail handler path.
+	- Observed failure: `Game` has no attribute `_handle_go_to_jail_tile`.
+	- Logical issue found: tests expect decomposed tile handlers, but implementation is inlined in `_move_and_resolve`.
 
-7. Error 7 - `whitebox/tests/test_dice.py::test_roll_calls_randint_with_six_sided_bounds`
-	- Why this test is needed (simple): Monopoly-style dice must allow the face value 6.
-	- Observed failure: dice uses bounds `(1, 5)` for both rolls.
-	- Logical issue found: `Dice.roll()` generates from the wrong range.
-	- Detailed explanation: removing face 6 changes movement probabilities, doubles frequency, and average distance per turn. This is a core simulation correctness defect.
+6. Error 6 - `whitebox/tests/test_game.py::test_move_and_resolve_dispatches_tile_handlers[income_tax-income]`
+	- Why this test is needed (simple): income tax branch should be independently dispatchable.
+	- Observed failure: missing `_handle_income_tax_tile`-style handler attribute.
+	- Logical issue found: no dedicated handler method exists for monkeypatchable dispatch path.
 
-8. Error 8 - `whitebox/tests/test_error_discovery_additional.py::test_error_discovery_collect_negative_should_not_change_funds`
-	- Why this test is needed (simple): this is a second independent check so the same bug is not tied to one test file.
-	- Observed failure: negative collect reduced bank funds.
-	- Logical issue found: same missing sign validation in `Bank.collect()`.
-	- Detailed explanation: duplicate-path confirmation increases confidence that the defect is in production logic, not a test setup artifact.
+7. Error 7 - `whitebox/tests/test_game.py::test_move_and_resolve_dispatches_tile_handlers[luxury_tax-luxury]`
+	- Why this test is needed (simple): luxury tax flow should be independently testable.
+	- Observed failure: missing dedicated luxury-tax tile handler attribute.
+	- Logical issue found: same handler decomposition gap as above.
 
-9. Error 9 - `whitebox/tests/test_error_discovery_additional.py::test_error_discovery_loan_should_reduce_bank_balance`
-	- Why this test is needed (simple): verifies loan behavior from a separate discovery suite.
-	- Observed failure: emergency loan did not reduce bank reserves.
-	- Logical issue found: same transfer-accounting bug in `give_loan()`.
-	- Detailed explanation: this confirms that all loan entry points currently mint cash instead of transferring existing reserves.
+8. Error 8 - `whitebox/tests/test_game.py::test_move_and_resolve_dispatches_tile_handlers[free_parking-parking]`
+	- Why this test is needed (simple): free parking branch should be explicitly dispatch-tested.
+	- Observed failure: expected handler attribute not found.
+	- Logical issue found: inlined branching prevents expected handler-level instrumentation.
 
-10. Error 10 - `whitebox/tests/test_error_discovery_additional.py::test_error_discovery_dice_should_use_six_sided_bounds`
-	- Why this test is needed (simple): verifies dice range correctness through another isolated test path.
-	- Observed failure: dice calls remained `(1, 5)`.
-	- Logical issue found: die upper bound is hardcoded incorrectly.
-	- Detailed explanation: repeated failure across suites proves distribution bias is persistent and not due to monkeypatch specifics.
+9. Error 9 - `whitebox/tests/test_game.py::test_move_and_resolve_dispatches_tile_handlers[chance-chance]`
+	- Why this test is needed (simple): chance tile should call clear card-draw/handler path.
+	- Observed failure: handler monkeypatch target missing.
+	- Logical issue found: interface mismatch between refactored tests and current game internals.
 
-11. Error 11 - `whitebox/tests/test_error_discovery_additional.py::test_error_discovery_move_past_go_should_grant_salary`
-	- Why this test is needed (simple): players should be paid when they pass GO, not only when landing exactly on GO.
-	- Observed failure: no GO salary when moving from 38 to 2.
-	- Logical issue found: `Player.move()` awards salary only when final position is `0`.
-	- Detailed explanation: wraparound movement can pass GO without ending on tile 0. The current condition misses this valid salary event and underpays players.
+10. Error 10 - `whitebox/tests/test_game.py::test_move_and_resolve_dispatches_tile_handlers[community_chest-chest]`
+	- Why this test is needed (simple): chest tile should follow explicit dispatch contract.
+	- Observed failure: missing expected handler attribute.
+	- Logical issue found: same dispatch API mismatch as other tile-handler tests.
 
-12. Error 12 - `whitebox/tests/test_error_discovery_additional.py::test_error_discovery_group_full_ownership_requires_all_properties`
-	- Why this test is needed (simple): rent-doubling rules require full color-set ownership.
-	- Observed failure: group ownership check returned true for partial ownership.
-	- Logical issue found: `PropertyGroup.all_owned_by()` uses `any(...)` instead of an all-properties check.
-	- Detailed explanation: partial ownership is incorrectly treated as monopoly ownership, which can inflate rent and distort strategic balance.
+11. Error 11 - `whitebox/tests/test_game.py::test_buy_property_succeeds_when_balance_equals_price`
+	- Why this test is needed (simple): exact-balance players should be able to buy a property.
+	- Observed failure: buy returns false when `balance == price`.
+	- Logical issue found: affordability condition is too strict (`<=` instead of `<`).
 
-13. Error 13 - `whitebox/tests/test_game_logic.py::test_buy_property_balance_threshold[0-True]`
-	- Why this test is needed (simple): a player with exact cost should be allowed to buy.
-	- Observed failure: purchase fails when `balance == price`.
-	- Logical issue found: affordability check uses `<=` where `<` is required.
-	- Detailed explanation: this off-by-one-style condition blocks legal purchases, leaving properties unbought and changing game progression.
+12. Error 12 - `whitebox/tests/test_game.py::test_find_winner_returns_highest_net_worth_player`
+	- Why this test is needed (simple): winner must be richest player.
+	- Observed failure: lower net-worth player returned.
+	- Logical issue found: winner calculation uses `min` net worth.
 
-14. Error 14 - `whitebox/tests/test_game_logic.py::test_pay_rent_transfers_money_to_owner`
-	- Why this test is needed (simple): rent is a transfer from tenant to owner.
-	- Observed failure: tenant pays rent, owner balance unchanged.
-	- Logical issue found: `Game.pay_rent()` deducts from payer but never credits owner.
-	- Detailed explanation: money is effectively destroyed on rent events, lowering total game cash and making ownership rewards incorrect.
+13. Error 13 - `whitebox/tests/test_game_decision_path.py::test_draw_and_apply_uses_selected_deck`
+	- Why this test is needed (simple): game should expose/select decks consistently for draw/apply logic.
+	- Observed failure: `Game` has no `decks` attribute.
+	- Logical issue found: expected deck abstraction in tests is absent in implementation.
 
-15. Error 15 - `whitebox/tests/test_game_logic.py::test_find_winner_returns_highest_net_worth_player`
-	- Why this test is needed (simple): game end must choose the richest player as winner.
-	- Observed failure: wrong winner selected (not highest net worth).
-	- Logical issue found: `find_winner()` selects `min(...)` net worth instead of `max(...)`.
-	- Detailed explanation: final outcome is inverted, so weaker players can incorrectly win. This is a high-severity endgame correctness bug.
+14. Error 14 - `whitebox/tests/test_game_decision_path.py::test_apply_card_birthday_alias_calls_collect_from_others`
+	- Why this test is needed (simple): birthday behavior should map to shared collect-from-others logic.
+	- Observed failure: missing expected card helper method/attribute path.
+	- Logical issue found: helper-level card API expected by tests is not implemented.
 
-16. Error 16 - `whitebox/tests/test_game_logic.py::test_apply_card_move_to_awards_go_salary_when_wrapping`
-	- Why this test is needed (simple): card logic should run automatically without waiting for keyboard input.
-	- Observed failure: `_apply_card` path triggers interactive input and raises stdin capture `OSError`.
-	- Logical issue found: `_apply_card(move_to)` is tightly coupled to interactive property handling (`input(...)`).
-	- Detailed explanation: business logic and UI input are mixed in one path. This makes automated execution fragile and prevents deterministic testing of card movement outcomes.
+15. Error 15 - `whitebox/tests/test_integration.py::test_integration_bank_loan_updates_player_and_bank_balance`
+	- Why this test is needed (simple): loan should transfer money from bank to player.
+	- Observed failure: bank balance unchanged after loan issue.
+	- Logical issue found: `Bank.give_loan()` does not debit bank funds.
 
-17. Error 17 - `whitebox/tests/test_game_paths_additional.py::test_handle_jail_turn_pays_fine_when_confirmed`
-	- Why this test is needed (simple): if player chooses to pay fine, they must leave jail immediately.
-	- Observed failure: player remains in jail after expected fine payment flow.
-	- Logical issue found: jail confirmation flow behaves inconsistently with expected prompt sequence.
-	- Detailed explanation: turn-state transitions in jail are complex and order-sensitive. This failing path indicates a control-flow mismatch that can trap players in jail longer than intended.
+16. Error 16 - `whitebox/tests/test_integration.py::test_integration_purchase_then_rent_transfers_to_owner`
+	- Why this test is needed (simple): rent should increase owner balance.
+	- Observed failure: owner not credited after tenant pays rent.
+	- Logical issue found: `Game.pay_rent()` deducts tenant balance but omits owner credit.
 
-18. Error 18 - `whitebox/tests/test_game_paths_additional.py::test_interactive_menu_routes_all_options`
-	- Why this test is needed (simple): every menu option should execute once and then return cleanly when user chooses roll.
-	- Observed failure: menu flow consumed inputs and raised `StopIteration`/`RuntimeError`.
-	- Logical issue found: menu loop requests more input than expected under mocked sequence.
-	- Detailed explanation: this suggests a control-flow loop issue in option handling (especially option 6 path), causing non-terminating or over-consuming input behavior in interactive mode.
+17. Error 17 - `whitebox/tests/test_integration.py::test_integration_trade_transfers_cash_and_property`
+	- Why this test is needed (simple): successful trade must move both cash and property.
+	- Observed failure: seller cash does not increase as expected.
+	- Logical issue found: `trade()` deducts buyer but does not credit seller.
 
-19. Error 19 - `whitebox/tests/test_player.py::test_move_position_and_salary_logic[39-2-1-True]`
-	- Why this test is needed (simple): movement rules must pay salary when crossing GO on wraparound.
-	- Observed failure: wrapping movement did not award GO salary.
-	- Logical issue found: same GO-pass detection defect seen in Error 11.
-	- Detailed explanation: this independent parameterized test confirms the rule break in core `Player.move()` logic, not in one custom scenario.
+18. Error 18 - `whitebox/tests/test_integration.py::test_integration_collect_from_all_transfers_from_each_eligible_player`
+	- Why this test is needed (simple): collect-from-all card logic should be reusable and correct.
+	- Observed failure: missing `_card_collect_from_others` helper.
+	- Logical issue found: helper API assumed by tests is missing in implementation.
 
-20. Error 20 - `whitebox/tests/test_property.py::test_all_owned_by_requires_full_group_ownership`
-	- Why this test is needed (simple): full-set ownership checks are used by rent rules and must be strict.
-	- Observed failure: `all_owned_by` returned true with only partial group ownership.
-	- Logical issue found: same ownership-aggregation bug seen in Error 12.
-	- Detailed explanation: this confirms the defect directly in the property module. Any downstream logic that trusts this method (rent multipliers, strategy evaluation) can produce wrong outcomes.
+19. Error 19 - `whitebox/tests/test_integration.py::test_integration_card_move_to_property_and_buy`
+	- Why this test is needed (simple): move-to card should route property landing behavior correctly.
+	- Observed failure: missing `_card_move_to` helper.
+	- Logical issue found: card movement is embedded in `_apply_card`; helper interface absent.
+
+20. Error 20 - `whitebox/tests/test_integration.py::test_integration_card_collect_uses_bank_payout_path`
+	- Why this test is needed (simple): collect card should use bank payout path consistently.
+	- Observed failure: missing `_card_collect` helper.
+	- Logical issue found: card sub-action helper expected by tests is absent.
+
+21. Error 21 - `whitebox/tests/test_integration_decision_path.py::test_integration_card_collect_from_all_skips_collector_and_low_balance_players`
+	- Why this test is needed (simple): low-balance players should be skipped safely in collect-from-all.
+	- Observed failure: missing `_card_collect_from_others` helper.
+	- Logical issue found: same helper-interface gap as Errors 18 and 20.
+
+22. Error 22 - `whitebox/tests/test_integration_decision_path.py::test_integration_card_move_to_property_skip_branch`
+	- Why this test is needed (simple): move-to property skip choice should be directly testable.
+	- Observed failure: missing `_card_move_to` helper.
+	- Logical issue found: no dedicated card-move helper exposed for branch-level testing.
+
+23. Error 23 - `whitebox/tests/test_integration_decision_path.py::test_integration_card_move_to_go_tile_collects_salary_without_prompt`
+	- Why this test is needed (simple): GO wrap salary from card-move should work without UI blocking.
+	- Observed failure: missing `_card_move_to` helper.
+	- Logical issue found: helper-level API absent; card logic tightly coupled inside `_apply_card`.
+
+24. Error 24 - `whitebox/tests/test_integration_extra.py::test_integration_move_and_resolve_income_tax_reduces_player_and_increases_bank`
+	- Why this test is needed (simple): income tax tile should be unit-isolated and deterministic.
+	- Observed failure: missing `_handle_income_tax_tile` helper.
+	- Logical issue found: handler decomposition expected in tests does not exist.
+
+25. Error 25 - `whitebox/tests/test_integration_extra.py::test_integration_move_and_resolve_luxury_tax_reduces_player_and_increases_bank`
+	- Why this test is needed (simple): luxury tax tile should be independently validated.
+	- Observed failure: missing `_handle_luxury_tax_tile` helper.
+	- Logical issue found: same tile-handler API mismatch as above.
+
+26. Error 26 - `whitebox/tests/test_integration_extra.py::test_integration_card_move_to_same_or_forward_does_not_collect_go_salary`
+	- Why this test is needed (simple): no salary should be awarded if GO is not crossed.
+	- Observed failure: missing `_card_move_to` helper.
+	- Logical issue found: absence of dedicated helper blocks direct verification.
+
+27. Error 27 - `whitebox/tests/test_integration_extra.py::test_integration_card_move_to_wrap_collects_go_salary`
+	- Why this test is needed (simple): crossing GO via card should award salary.
+	- Observed failure: missing `_card_move_to` helper.
+	- Logical issue found: card move logic is not exposed through expected helper API.
+
+28. Error 28 - `whitebox/tests/test_integration_extra.py::test_integration_draw_and_apply_none_card_is_noop`
+	- Why this test is needed (simple): draw/apply should safely no-op on empty card draw.
+	- Observed failure: `Game` has no `decks` attribute.
+	- Logical issue found: test expects dictionary-based deck access; implementation uses separate deck fields.
+
+29. Error 29 - `whitebox/tests/test_player.py::test_move_wraps_board_and_passes_go_collects_salary`
+	- Why this test is needed (simple): passing GO during wrap must pay salary.
+	- Observed failure: balance unchanged after move from 39 to 1.
+	- Logical issue found: `Player.move()` only pays salary when landing exactly on 0.
+
+30. Error 30 - `whitebox/tests/test_property.py::test_group_all_owned_by_requires_every_property_owned_by_player`
+	- Why this test is needed (simple): full-group ownership must require every property.
+	- Observed failure: method returns true on mixed ownership.
+	- Logical issue found: `all_owned_by()` uses `any(...)` instead of all-members check.
+
+31. Error 31 - `whitebox/tests/test_property.py::test_get_rent_doubles_only_on_full_group_ownership`
+	- Why this test is needed (simple): rent should double only for true monopoly ownership.
+	- Observed failure: doubled rent returned despite partial ownership.
+	- Logical issue found: rent calculation depends on flawed `all_owned_by()` behavior.
+
+32. Error 32 - `whitebox/tests/test_remaining_decision_path.py::test_tile_handlers_direct_paths_cover_jail_income_luxury_and_free_parking`
+	- Why this test is needed (simple): direct tile handler calls improve branch-level reliability.
+	- Observed failure: missing `_handle_go_to_jail_tile` helper.
+	- Logical issue found: expected helper API is not present in current Game design.
+
+33. Error 33 - `whitebox/tests/test_remaining_decision_path.py::test_mortgage_property_rejects_when_bank_cannot_pay`
+	- Why this test is needed (simple): mortgage payout should fail if bank has no funds.
+	- Observed failure: mortgage succeeds even when bank reserves are zero.
+	- Logical issue found: mortgage flow credits player without checking bank payout capability.
+
+34. Error 34 - `whitebox/tests/test_remaining_decision_path.py::test_card_move_to_property_tile_with_missing_property_no_handler_call`
+	- Why this test is needed (simple): move-to should handle missing property lookup safely.
+	- Observed failure: missing `_card_move_to` helper.
+	- Logical issue found: no dedicated helper for guarded card movement branch.
+
+35. Error 35 - `whitebox/tests/test_remaining_decision_path.py::test_card_collect_from_others_ignores_underfunded_players`
+	- Why this test is needed (simple): underfunded players should be skipped in mass-collect operations.
+	- Observed failure: missing `_card_collect_from_others` helper.
+	- Logical issue found: helper-level card collection API absent.
+
+36. Error 36 - `whitebox/tests/test_remaining_decision_path.py::test_unmortgage_fails_when_insufficient_balance_keeps_mortgaged`
+	- Why this test is needed (simple): failed unmortgage must keep property mortgaged.
+	- Observed failure: unmortgage failure path leaves property as not mortgaged.
+	- Logical issue found: `unmortgage_property()` calls `prop.unmortgage()` before checking player affordability, causing incorrect state mutation on failure.
+
+37. Error 37 - `whitebox/tests/test_remaining_decision_path.py::test_card_move_to_non_property_tile_does_not_call_property_handler`
+	- Why this test is needed (simple): non-property card destinations must not invoke property flow.
+	- Observed failure: missing `_card_move_to` helper.
+	- Logical issue found: card routing helper expected by tests is not implemented.
+
+### Summary Of Current 1.3 Findings
+
+- Confirmed gameplay logic defects:
+	- Negative `Bank.collect` handling.
+	- Loan does not debit bank reserves.
+	- Trade does not credit seller cash.
+	- Rent does not credit owner.
+	- GO salary miss when passing GO (non-zero wrap).
+	- Winner selection uses minimum net worth.
+	- Group ownership uses partial (`any`) instead of full ownership.
+	- Empty deck `cards_remaining()` divides by zero.
+	- Unmortgage failure mutates mortgage state incorrectly.
+	- Mortgage payout does not enforce bank affordability.
+
+- Architecture/test-contract mismatches introduced by expanded suite:
+	- Missing helper methods expected by new tests: `_card_move_to`, `_card_collect`, `_card_collect_from_others`, `_handle_go_to_jail_tile`, `_handle_income_tax_tile`, `_handle_luxury_tax_tile`, and `decks` mapping abstraction.
+	- These are currently recorded as 1.3 failures and must be resolved either by:
+		- implementing the helper API in code, or
+		- adapting tests to current inlined architecture (if helper API is intentionally out-of-scope).
 
 
