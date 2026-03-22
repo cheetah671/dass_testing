@@ -726,4 +726,93 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 		- implementing the helper API in code, or
 		- adapting tests to current inlined architecture (if helper API is intentionally out-of-scope).
 
+## 1.3 Fix Execution Log (13 Batches)
+
+- Fix strategy note:
+	- Errors were fixed in 13 incremental batches and validated after each batch.
+	- Numbering below follows the final fix-order used during implementation (`Error 1` to `Error 13`).
+
+1. Error 1: Ignore negative bank collection inputs.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/bank.py`
+	- Change: `Bank.collect()` now returns early for negative amounts.
+	- Effect: prevents invalid negative collect values from reducing bank funds.
+
+2. Error 2: Handle empty deck safely in `cards_remaining`.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/cards.py`
+	- Change: `CardDeck.cards_remaining()` returns `0` when deck is empty.
+	- Effect: removes `ZeroDivisionError` for empty-deck paths.
+
+3. Error 3: Debit bank funds when issuing emergency loans.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/bank.py`
+	- Change: `Bank.give_loan()` now reduces bank reserves by the loan amount.
+	- Effect: loan flow is now a real transfer (bank -> player), not money creation.
+
+4. Error 4: Add tile-handler and deck-dispatch APIs expected by suite.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+	- Changes:
+		- Added `self.decks` mapping.
+		- Added `_draw_and_apply(...)`.
+		- Added `_handle_go_to_jail_tile`, `_handle_income_tax_tile`, `_handle_luxury_tax_tile`, `_handle_free_parking_tile`.
+		- Routed `_move_and_resolve(...)` through these handlers.
+	- Effect: resolved missing-attribute branch-dispatch failures and aligned code with test contract.
+
+5. Error 5: Allow exact-balance property purchase.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+	- Change: `buy_property()` affordability check updated from `<=` to `<`.
+	- Effect: player can buy when `balance == price`.
+
+6. Error 6: Add card helper APIs and route `_apply_card` through them.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+	- Changes:
+		- Added `_card_collect`, `_card_collect_from_others`, `_card_move_to`.
+		- Updated `_apply_card(...)` to call these helpers.
+	- Effect: fixed missing card-helper attributes and stabilized card action paths.
+
+7. Error 7: Correct winner selection logic.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+	- Change: `find_winner()` now uses `max(..., key=net_worth)`.
+	- Effect: highest net-worth player is selected as winner.
+
+8. Error 8: Credit owner during rent payment.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+	- Change: `pay_rent()` now adds rent to `prop.owner` after tenant deduction.
+	- Effect: rent is transferred correctly instead of disappearing.
+
+9. Error 9: Credit seller during successful trade.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+	- Change: `trade()` now calls `seller.add_money(cash_amount)`.
+	- Effect: trade cash flow is now complete (buyer -> seller).
+
+10. Error 10: Award GO salary on wraparound movement.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/player.py`
+	- Change: `move()` now awards salary when crossing GO (`new_pos < old_pos`) or landing on GO.
+	- Effect: correct salary behavior for wraparound movement.
+
+11. Error 11: Require full group ownership.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/property.py`
+	- Change: `PropertyGroup.all_owned_by()` now uses `all(...)` with non-empty guard.
+	- Effect: rent multiplier now triggers only on true full-group ownership.
+
+12. Error 12: Enforce bank liquidity for mortgage payout.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+	- Changes:
+		- `mortgage_property()` now uses `bank.pay_out(payout)`.
+		- Rolls back mortgage flag if bank cannot pay.
+	- Effect: mortgage fails safely when bank reserves are insufficient.
+
+13. Error 13: Preserve mortgage state on failed unmortgage.
+	- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+	- Changes:
+		- `unmortgage_property()` now checks affordability before clearing mortgage status.
+		- Sets `prop.is_mortgaged = False` only after successful payment.
+	- Effect: failed unmortgage no longer mutates property state incorrectly.
+
+### Final Verification After 13 Batches
+
+- Command:
+	- `pytest whitebox/tests -q`
+- Result:
+	- `288 passed`
+	- `0 failed`
+
 
