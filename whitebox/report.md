@@ -109,4 +109,19 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 8: Add property import fallback in board.py to fix E0401 (import-error) from repo-root pylint run`
 
+## Iteration 9 - `board.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/board.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/board.py`
+- Warning fixed in this iteration:
+	- `E0401`: unable to import `moneypoly.config` during repo-root lint run
+- Changes made:
+	- Added fallback import handling for config constants:
+		- Primary imports from `moneypoly.config`
+		- Fallback imports from `whitebox.moneypoly.moneypoly.moneypoly.config`
+	- Consolidated fallback imports into grouped `try/except` blocks to keep import ordering/lint grouping clean.
+- Score change: `8.81/10 -> 10.00/10`
+- Commit message used:
+	- `Iteration 9: Add config import fallback in board.py to fix E0401 (import-error) from repo-root pylint run`
+
 

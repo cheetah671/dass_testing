@@ -1,16 +1,23 @@
 """Board layout and tile lookup helpers for the MoneyPoly game."""
 
-from moneypoly.config import (
-    JAIL_POSITION,
-    GO_TO_JAIL_POSITION,
-    FREE_PARKING_POSITION,
-    INCOME_TAX_POSITION,
-    LUXURY_TAX_POSITION,
-)
 try:
+    from moneypoly.config import (
+        FREE_PARKING_POSITION,
+        GO_TO_JAIL_POSITION,
+        INCOME_TAX_POSITION,
+        JAIL_POSITION,
+        LUXURY_TAX_POSITION,
+    )
     from moneypoly.property import Property, PropertyGroup
 except ModuleNotFoundError:
     # Fallback for lint/test runs executed from the repository root.
+    from whitebox.moneypoly.moneypoly.moneypoly.config import (
+        FREE_PARKING_POSITION,
+        GO_TO_JAIL_POSITION,
+        INCOME_TAX_POSITION,
+        JAIL_POSITION,
+        LUXURY_TAX_POSITION,
+    )
     from whitebox.moneypoly.moneypoly.moneypoly.property import (
         Property,
         PropertyGroup,
