@@ -406,4 +406,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 30: Add class docstring in property.py for PropertyGroup to fix C0115 (missing-class-docstring)`
 
+## Iteration 31 - `property.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/property.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/property.py`
+- Warning fixed in this iteration:
+	- `R1705`: no-else-return
+- Changes made:
+	- Removed unnecessary `else` block in `unmortgage()` after early `return`.
+	- Kept method behavior unchanged.
+- Score change: `9.32/10 -> 9.49/10`
+- Commit message used:
+	- `Iteration 31: Remove unnecessary else in property.py unmortgage to fix R1705 (no-else-return)`
+
 
