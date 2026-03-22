@@ -124,4 +124,18 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 9: Add config import fallback in board.py to fix E0401 (import-error) from repo-root pylint run`
 
+## Iteration 10 - `cards.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/cards.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/cards.py`
+- Warnings fixed in this iteration:
+	- `C0301`: line-too-long (all occurrences in card list definitions)
+- Changes made:
+	- Reformatted all dictionary entries in `CHANCE_CARDS` across multiple lines.
+	- Reformatted all dictionary entries in `COMMUNITY_CHEST_CARDS` across multiple lines.
+	- Kept card content and behavior unchanged; only formatting/layout was adjusted.
+- Score change: `0.77/10 -> 10.00/10`
+- Commit message used:
+	- `Iteration 10: Reformat card definitions in cards.py to fix all C0301 line-too-long warnings`
+
 
