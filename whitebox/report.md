@@ -473,4 +473,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 35: Add module docstring in ui.py to fix C0114 (missing-module-docstring)`
 
+## Iteration 36 - `ui.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/ui.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/ui.py`
+- Warning fixed in this iteration:
+	- `W0702`: bare-except
+- Changes made:
+	- Replaced bare `except:` with `except ValueError:` in `safe_int_input()`.
+	- Preserved existing fallback behavior (`return default`) for invalid integer input.
+- Score change: `9.77/10 -> 10.00/10`
+- Commit message used:
+	- `Iteration 36: Replace bare except in ui.py safe_int_input to fix W0702 (bare-except)`
+
 
