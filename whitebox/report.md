@@ -269,4 +269,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 20: Remove superfluous parens in one not-condition in game.py to fix C0325 occurrence`
 
+## Iteration 21 - `game.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Warning fixed in this iteration:
+	- `C0325`: superfluous-parens (second occurrence)
+- Changes made:
+	- Updated `if not (0 <= pidx < len(player.properties)):` to `if not 0 <= pidx < len(player.properties):`.
+	- No behavior changes.
+- Score change: `8.84/10 -> 8.87/10`
+- Commit message used:
+	- `Iteration 21: Remove superfluous parens in second not-condition in game.py to fix C0325 occurrence`
+
 
