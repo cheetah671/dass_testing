@@ -82,4 +82,16 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 6: Add module docstring in board.py to fix C0114 (missing-module-docstring)`
 
+## Iteration 7 - `board.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/board.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/board.py`
+- Warning fixed in this iteration:
+	- `C0121`: singleton comparison (`prop.is_mortgaged == True`)
+- Changes made:
+	- Replaced `if prop.is_mortgaged == True:` with `if prop.is_mortgaged:`.
+- Score change: `7.18/10 -> 7.44/10`
+- Commit message used:
+	- `Iteration 7: Replace singleton comparison in board.py to fix C0121 (singleton-comparison)`
+
 
