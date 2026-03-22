@@ -347,8 +347,7 @@ class Game:  # pylint: disable=too-many-instance-attributes
         value = card["value"]
 
         if action == "collect":
-            amount = self.bank.pay_out(value)
-            player.add_money(amount)
+            self._card_collect(player, value)
 
         elif action == "pay":
             player.deduct_money(value)
@@ -363,28 +362,39 @@ class Game:  # pylint: disable=too-many-instance-attributes
             print(f"  {player.name} now holds a Get Out of Jail Free card.")
 
         elif action == "move_to":
-            old_pos = player.position
-            player.position = value
-            if value < old_pos:
-                player.add_money(GO_SALARY)
-                print(f"  {player.name} passed Go and collected ${GO_SALARY}.")
-            tile = self.board.get_tile_type(value)
-            if tile == "property":
-                prop = self.board.get_property_at(value)
-                if prop:
-                    self._handle_property_tile(player, prop)
+            self._card_move_to(player, value)
 
         elif action == "birthday":
-            for other in self.players:
-                if other != player and other.balance >= value:
-                    other.deduct_money(value)
-                    player.add_money(value)
+            self._card_collect_from_others(player, value)
 
         elif action == "collect_from_all":
-            for other in self.players:
-                if other != player and other.balance >= value:
-                    other.deduct_money(value)
-                    player.add_money(value)
+            self._card_collect_from_others(player, value)
+
+    def _card_collect(self, player, amount):
+        """Apply a collect card by paying out from bank to player."""
+        payout = self.bank.pay_out(amount)
+        player.add_money(payout)
+
+    def _card_collect_from_others(self, player, amount):
+        """Collect `amount` from each eligible opponent and credit `player`."""
+        for other in self.players:
+            if other != player and other.balance >= amount:
+                other.deduct_money(amount)
+                player.add_money(amount)
+
+    def _card_move_to(self, player, target_position):
+        """Move player to a target tile and resolve card-specific side effects."""
+        old_pos = player.position
+        player.position = target_position
+        if target_position < old_pos:
+            player.add_money(GO_SALARY)
+            print(f"  {player.name} passed Go and collected ${GO_SALARY}.")
+
+        tile = self.board.get_tile_type(target_position)
+        if tile == "property":
+            prop = self.board.get_property_at(target_position)
+            if prop:
+                self._handle_property_tile(player, prop)
 
 
     def _check_bankruptcy(self, player):
