@@ -217,8 +217,13 @@ class Game:  # pylint: disable=too-many-instance-attributes
         if payout == 0:
             print(f"  {prop.name} is already mortgaged.")
             return False
+        try:
+            self.bank.pay_out(payout)
+        except ValueError:
+            prop.is_mortgaged = False
+            print(f"  Bank cannot fund mortgage payout for {prop.name}.")
+            return False
         player.add_money(payout)
-        self.bank.collect(-payout)
         print(f"  {player.name} mortgaged {prop.name} and received ${payout}.")
         return True
 
