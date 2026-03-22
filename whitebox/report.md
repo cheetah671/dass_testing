@@ -192,4 +192,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 14: Add config import fallback in dice.py to fix E0401 (import-error) from repo-root pylint run`
 
+## Iteration 15 - `dice.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/dice.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/dice.py`
+- Warning fixed in this iteration:
+	- `W0611`: unused import (`BOARD_SIZE`)
+- Changes made:
+	- Removed unused `BOARD_SIZE` import block from the top of `dice.py`.
+	- No gameplay logic changed.
+- Score change: `9.68/10 -> 10.00/10`
+- Commit message used:
+	- `Iteration 15: Remove unused BOARD_SIZE import in dice.py to fix W0611 (unused-import)`
+
 
