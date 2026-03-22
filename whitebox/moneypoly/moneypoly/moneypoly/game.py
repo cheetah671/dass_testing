@@ -50,6 +50,10 @@ class Game:  # pylint: disable=too-many-instance-attributes
         self.running = True
         self.chance_deck = CardDeck(CHANCE_CARDS)
         self.community_deck = CardDeck(COMMUNITY_CHEST_CARDS)
+        self.decks = {
+            "chance": self.chance_deck,
+            "community_chest": self.community_deck,
+        }
 
     def current_player(self):
         """Return the Player whose turn it currently is."""
@@ -99,29 +103,22 @@ class Game:  # pylint: disable=too-many-instance-attributes
         print(f"  {player.name} moved to position {position}  [{tile}]")
 
         if tile == "go_to_jail":
-            player.go_to_jail()
-            print(f"  {player.name} has been sent to Jail!")
+            self._handle_go_to_jail_tile(player)
 
         elif tile == "income_tax":
-            player.deduct_money(INCOME_TAX_AMOUNT)
-            self.bank.collect(INCOME_TAX_AMOUNT)
-            print(f"  {player.name} paid income tax: ${INCOME_TAX_AMOUNT}.")
+            self._handle_income_tax_tile(player)
 
         elif tile == "luxury_tax":
-            player.deduct_money(LUXURY_TAX_AMOUNT)
-            self.bank.collect(LUXURY_TAX_AMOUNT)
-            print(f"  {player.name} paid luxury tax: ${LUXURY_TAX_AMOUNT}.")
+            self._handle_luxury_tax_tile(player)
 
         elif tile == "free_parking":
-            print(f"  {player.name} rests on Free Parking. Nothing happens.")
+            self._handle_free_parking_tile(player)
 
         elif tile == "chance":
-            card = self.chance_deck.draw()
-            self._apply_card(player, card)
+            self._draw_and_apply(player, "chance")
 
         elif tile == "community_chest":
-            card = self.community_deck.draw()
-            self._apply_card(player, card)
+            self._draw_and_apply(player, "community_chest")
 
         elif tile == "railroad":
             prop = self.board.get_property_at(position)
@@ -134,6 +131,35 @@ class Game:  # pylint: disable=too-many-instance-attributes
                 self._handle_property_tile(player, prop)
 
         self._check_bankruptcy(player)
+
+    def _handle_go_to_jail_tile(self, player):
+        """Send player to jail from the corresponding board tile."""
+        player.go_to_jail()
+        print(f"  {player.name} has been sent to Jail!")
+
+    def _handle_income_tax_tile(self, player):
+        """Process income tax tile effects."""
+        player.deduct_money(INCOME_TAX_AMOUNT)
+        self.bank.collect(INCOME_TAX_AMOUNT)
+        print(f"  {player.name} paid income tax: ${INCOME_TAX_AMOUNT}.")
+
+    def _handle_luxury_tax_tile(self, player):
+        """Process luxury tax tile effects."""
+        player.deduct_money(LUXURY_TAX_AMOUNT)
+        self.bank.collect(LUXURY_TAX_AMOUNT)
+        print(f"  {player.name} paid luxury tax: ${LUXURY_TAX_AMOUNT}.")
+
+    def _handle_free_parking_tile(self, player):
+        """Process free parking tile effects."""
+        print(f"  {player.name} rests on Free Parking. Nothing happens.")
+
+    def _draw_and_apply(self, player, deck_name):
+        """Draw one card from the selected deck and apply it to player state."""
+        deck = self.decks.get(deck_name)
+        if deck is None:
+            return
+        card = deck.draw()
+        self._apply_card(player, card)
 
 
     def _handle_property_tile(self, player, prop):
