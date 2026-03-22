@@ -256,3 +256,4 @@ pytest integration/tests -q
 # Black-box tests
 QC_BASE_URL=http://localhost:8080 QC_ROLL_NUMBER=2024101103 pytest blackbox/tests/test_quickcart_api.py -q
 ```
+GITHUB REPO LINK -https://github.com/cheetah671/dass_testing.git
