@@ -1,6 +1,15 @@
 """Player state and movement logic for a MoneyPoly game participant."""
 
-from moneypoly.config import STARTING_BALANCE, BOARD_SIZE, GO_SALARY, JAIL_POSITION
+try:
+    from moneypoly.config import STARTING_BALANCE, BOARD_SIZE, GO_SALARY, JAIL_POSITION
+except ModuleNotFoundError:
+    # Fallback for lint/test runs executed from the repository root.
+    from whitebox.moneypoly.moneypoly.moneypoly.config import (
+        STARTING_BALANCE,
+        BOARD_SIZE,
+        GO_SALARY,
+        JAIL_POSITION,
+    )
 
 
 class Player:

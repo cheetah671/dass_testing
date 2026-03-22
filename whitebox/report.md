@@ -354,4 +354,18 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 26: Add module docstring in player.py to fix C0114 (missing-module-docstring)`
 
+## Iteration 27 - `player.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/player.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/player.py`
+- Warning fixed in this iteration:
+	- `E0401`: unable to import `moneypoly.config` during repo-root lint run
+- Changes made:
+	- Replaced direct config import with fallback import block:
+		- Primary: `from moneypoly.config import STARTING_BALANCE, BOARD_SIZE, GO_SALARY, JAIL_POSITION`
+		- Fallback: import the same constants from `whitebox.moneypoly.moneypoly.moneypoly.config`
+- Score change: `8.70/10 -> 9.80/10`
+- Commit message used:
+	- `Iteration 27: Add config import fallback in player.py to fix E0401 (import-error) from repo-root pylint run`
+
 
