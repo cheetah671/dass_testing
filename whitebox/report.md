@@ -303,4 +303,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 22: Resolve remaining game.py pylint issues with import fallbacks, control-flow cleanup, and targeted complexity pragmas`
 
+## Iteration 23 - `player.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/player.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/player.py`
+- Warning fixed in this iteration:
+	- `W0611`: unused import (`sys`)
+- Changes made:
+	- Removed `import sys` from `player.py`.
+	- No behavior changes.
+- Score change: `7.92/10 -> 8.09/10`
+- Commit message used:
+	- `Iteration 23: Remove unused sys import in player.py to fix W0611 (unused-import)`
+
 
