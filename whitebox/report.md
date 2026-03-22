@@ -164,4 +164,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 12: Add module docstring in dice.py to fix C0114 (missing-module-docstring)`
 
+## Iteration 13 - `dice.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/dice.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/dice.py`
+- Warning fixed in this iteration:
+	- `W0201`: attribute-defined-outside-init (`doubles_streak`)
+- Changes made:
+	- Declared `self.doubles_streak = 0` in `__init__`.
+	- Left `reset()` behavior unchanged.
+- Score change: `7.41/10 -> 7.86/10`
+- Commit message used:
+	- `Iteration 13: Define doubles_streak in dice.py __init__ to fix W0201 (attribute-defined-outside-init)`
+
 
