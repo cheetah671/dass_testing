@@ -177,4 +177,19 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 13: Define doubles_streak in dice.py __init__ to fix W0201 (attribute-defined-outside-init)`
 
+## Iteration 14 - `dice.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/dice.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/dice.py`
+- Warning fixed in this iteration:
+	- `E0401`: unable to import `moneypoly.config` during repo-root lint run
+- Changes made:
+	- Replaced direct import with fallback import block:
+		- Primary: `from moneypoly.config import BOARD_SIZE`
+		- Fallback: `from whitebox.moneypoly.moneypoly.moneypoly.config import BOARD_SIZE`
+	- Left `W0611` (unused import) intentionally for the next iteration.
+- Score change: `7.86/10 -> 9.68/10`
+- Commit message used:
+	- `Iteration 14: Add config import fallback in dice.py to fix E0401 (import-error) from repo-root pylint run`
+
 

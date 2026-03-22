@@ -1,7 +1,12 @@
 """Dice rolling utilities for movement and doubles tracking in MoneyPoly."""
 
 import random
-from moneypoly.config import BOARD_SIZE
+
+try:
+    from moneypoly.config import BOARD_SIZE
+except ModuleNotFoundError:
+    # Fallback for lint/test runs executed from the repository root.
+    from whitebox.moneypoly.moneypoly.moneypoly.config import BOARD_SIZE
 
 class Dice:
     """Simulates a pair of six-sided dice with consecutive-doubles tracking."""
