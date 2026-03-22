@@ -129,13 +129,27 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - File: `whitebox/moneypoly/moneypoly/moneypoly/cards.py`
 - Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/cards.py`
 - Warnings fixed in this iteration:
+	- `C0114`: missing module docstring
 	- `C0301`: line-too-long (all occurrences in card list definitions)
 - Changes made:
+	- Added module-level docstring for `cards.py`.
 	- Reformatted all dictionary entries in `CHANCE_CARDS` across multiple lines.
 	- Reformatted all dictionary entries in `COMMUNITY_CHEST_CARDS` across multiple lines.
 	- Kept card content and behavior unchanged; only formatting/layout was adjusted.
-- Score change: `0.77/10 -> 10.00/10`
+- Score change: `0.38/10 -> 0.77/10 -> 10.00/10`
 - Commit message used:
-	- `Iteration 10: Reformat card definitions in cards.py to fix all C0301 line-too-long warnings`
+	- `Iteration 10: Add module docstring and reformat card definitions in cards.py to fix C0114 and all C0301 warnings`
+
+## Iteration 11 - `config.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/config.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/config.py`
+- Warning fixed in this iteration:
+	- `C0114`: missing module docstring
+- Changes made:
+	- Added module-level docstring: `"""Global constants used across MoneyPoly game modules."""`
+- Score change: `9.29/10 -> 10.00/10`
+- Commit message used:
+	- `Iteration 11: Add module docstring in config.py to fix C0114 (missing-module-docstring)`
 
 

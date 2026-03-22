@@ -1,3 +1,5 @@
+"""Global constants used across MoneyPoly game modules."""
+
 STARTING_BALANCE = 1500
 GO_SALARY = 200
 BOARD_SIZE = 40
