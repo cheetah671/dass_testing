@@ -394,4 +394,16 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 29: Add module docstring in property.py to fix C0114 (missing-module-docstring)`
 
+## Iteration 30 - `property.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/property.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/property.py`
+- Warning fixed in this iteration:
+	- `C0115`: missing class docstring (`PropertyGroup`)
+- Changes made:
+	- Added class docstring to `PropertyGroup`: `"""Represents a color group that owns a set of related properties."""`
+- Score change: `9.15/10 -> 9.32/10`
+- Commit message used:
+	- `Iteration 30: Add class docstring in property.py for PropertyGroup to fix C0115 (missing-class-docstring)`
+
 
