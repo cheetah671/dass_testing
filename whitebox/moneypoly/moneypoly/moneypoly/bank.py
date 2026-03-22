@@ -1,6 +1,10 @@
 """Banking logic for funds collection, payouts, and emergency loans."""
 
-from moneypoly.config import BANK_STARTING_FUNDS
+try:
+    from moneypoly.config import BANK_STARTING_FUNDS
+except ModuleNotFoundError:
+    # Fallback for lint/test runs executed from the repository root.
+    from whitebox.moneypoly.moneypoly.moneypoly.config import BANK_STARTING_FUNDS
 
 
 class Bank:

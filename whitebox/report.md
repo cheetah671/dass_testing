@@ -19,4 +19,55 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 1: Add module/function docstrings in main.py to resolve pylint missing-docstring warnings`
 
+## Iteration 2 - `bank.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/bank.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/bank.py`
+- Warning fixed in this iteration:
+	- `C0114`: missing module docstring
+- Changes made:
+	- Added module-level docstring: `"""Banking logic for funds collection, payouts, and emergency loans."""`
+- Score change: `7.71/10 -> 8.00/10`
+- Commit message used:
+	- `Iteration 2: Add module docstring in bank.py to fix C0114 (missing-module-docstring)`
+
+## Iteration 3 - `bank.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/bank.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/bank.py`
+- Warning fixed in this iteration:
+	- `C0115`: missing class docstring (`Bank`)
+- Changes made:
+	- Added class docstring for `Bank`: `"""Track shared game funds and bank-side financial transactions."""`
+- Score change: `8.00/10 -> 8.29/10`
+- Commit message used:
+	- `Iteration 3: Add class docstring in bank.py to fix C0115 (missing-class-docstring)`
+
+## Iteration 4 - `bank.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/bank.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/bank.py`
+- Warning fixed in this iteration:
+	- `W0611`: unused import (`math`)
+- Changes made:
+	- Removed unused `import math`.
+- Score change: `8.29/10 -> 8.53/10`
+- Commit message used:
+	- `Iteration 4: Remove unused math import in bank.py to fix W0611 (unused-import)`
+
+## Iteration 5 - `bank.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/bank.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/bank.py`
+- Warning fixed in this iteration:
+	- `E0401`: unable to import `moneypoly.config` during repo-root lint run
+- Changes made:
+	- Replaced single import with a fallback import block:
+		- Primary: `from moneypoly.config import BANK_STARTING_FUNDS`
+		- Fallback: `from whitebox.moneypoly.moneypoly.moneypoly.config import BANK_STARTING_FUNDS`
+	- This keeps runtime compatibility while allowing root-level pylint execution.
+- Score change: `8.53/10 -> 10.00/10`
+- Commit message used:
+	- `Iteration 5: Add fallback config import in bank.py to fix E0401 (import-error) from repo-root pylint run`
+
 
