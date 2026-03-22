@@ -316,4 +316,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 23: Remove unused sys import in player.py to fix W0611 (unused-import)`
 
+## Iteration 24 - `player.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/player.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/player.py`
+- Warning fixed in this iteration:
+	- `W0612`: unused variable (`old_position`)
+- Changes made:
+	- Removed unused `old_position` assignment in `move()`.
+	- No behavior changes.
+- Score change: `8.09/10 -> 8.26/10`
+- Commit message used:
+	- `Iteration 24: Remove unused old_position variable in player.py to fix W0612 (unused-variable)`
+
 
