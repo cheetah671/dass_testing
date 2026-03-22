@@ -342,4 +342,16 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 25: Add final newline in player.py to fix C0304 (missing-final-newline)`
 
+## Iteration 26 - `player.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/player.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/player.py`
+- Warning fixed in this iteration:
+	- `C0114`: missing module docstring
+- Changes made:
+	- Added module-level docstring: `"""Player state and movement logic for a MoneyPoly game participant."""`
+- Score change: `8.48/10 -> 8.70/10`
+- Commit message used:
+	- `Iteration 26: Add module docstring in player.py to fix C0114 (missing-module-docstring)`
+
 

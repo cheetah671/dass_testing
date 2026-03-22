@@ -1,3 +1,5 @@
+"""Player state and movement logic for a MoneyPoly game participant."""
+
 from moneypoly.config import STARTING_BALANCE, BOARD_SIZE, GO_SALARY, JAIL_POSITION
 
 
