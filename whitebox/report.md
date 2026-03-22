@@ -230,4 +230,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 17: Remove unused os import in game.py to fix W0611 (unused-import)`
 
+## Iteration 18 - `game.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Warning fixed in this iteration:
+	- `W0611`: unused import (`GO_TO_JAIL_POSITION`)
+- Changes made:
+	- Removed `GO_TO_JAIL_POSITION` from `moneypoly.config` imports.
+	- No logic changes.
+- Score change: `8.75/10 -> 8.78/10`
+- Commit message used:
+	- `Iteration 18: Remove unused GO_TO_JAIL_POSITION import in game.py to fix W0611 (unused-import)`
+
 
