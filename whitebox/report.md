@@ -256,4 +256,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 19: Add final newline in game.py to fix C0304 (missing-final-newline)`
 
+## Iteration 20 - `game.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Warning fixed in this iteration:
+	- `C0325`: superfluous-parens (first occurrence)
+- Changes made:
+	- Updated `if not (0 <= idx < len(others)):` to `if not 0 <= idx < len(others):`.
+	- Left the second similar occurrence for the next iteration.
+- Score change: `8.81/10 -> 8.84/10`
+- Commit message used:
+	- `Iteration 20: Remove superfluous parens in one not-condition in game.py to fix C0325 occurrence`
+
 

@@ -449,7 +449,7 @@ class Game:
         for i, p in enumerate(others):
             print(f"  {i + 1}. {p.name}  (${p.balance})")
         idx = ui.safe_int_input("  Trade with: ", default=0) - 1
-        if not (0 <= idx < len(others)):
+        if not 0 <= idx < len(others):
             return
         partner = others[idx]
         if not player.properties:
