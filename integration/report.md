@@ -74,8 +74,8 @@ cd integration
 ```
 
 ### Final Test Result
-- Total integration tests: 20
-- Passed: 20
+- Total integration tests: 31
+- Passed: 31
 - Failed: 0
 
 ### Integration Test Cases
@@ -240,6 +240,94 @@ Reputation validation and leaderboard ordering after race points.
 - Actual result: Pass.
 - Errors/issues found: None.
 
+21. Scenario:
+Register member with initial `driver` role and enter race without separate role assignment.
+- Modules involved: Registration, Race Management, Inventory
+- Why needed: Confirms registration data (name + role) is usable directly by later modules.
+- Expected result: Race entry accepted for initially registered driver.
+- Actual result: Pass.
+- Errors/issues found: None.
+
+22. Scenario:
+Prevent duplicate driver and duplicate car entries in the same race.
+- Modules involved: Race Management, Crew Management, Inventory
+- Why needed: Prevents inconsistent race state and conflicting driver-car mappings.
+- Expected result: Duplicate driver or duplicate car assignment is rejected.
+- Actual result: Pass.
+- Errors/issues found: Initially this logical gap was present; fixed by adding validation in `race_management.py`.
+
+23. Scenario:
+Try entering a race after results have already completed that race.
+- Modules involved: Results, Race Management
+- Why needed: Ensures race lifecycle is closed after completion and cannot be mutated.
+- Expected result: Entry rejected for completed race.
+- Actual result: Pass.
+- Errors/issues found: None.
+
+24. Scenario:
+Record race result with missing participant in final order.
+- Modules involved: Race Management, Results
+- Why needed: Ensures full and fair result consistency for rankings/reputation updates.
+- Expected result: Rejected because final order must include all race participants exactly once.
+- Actual result: Pass.
+- Errors/issues found: Initially this validation gap existed; fixed in `results.py`.
+
+25. Scenario:
+Prevent mission re-completion or restart after completion (cash exploit check).
+- Modules involved: Mission Planning, Inventory
+- Why needed: Avoids repeated reward payout from the same mission.
+- Expected result: Completing an already completed mission or starting it again is rejected.
+- Actual result: Pass.
+- Errors/issues found: Initially this lifecycle gap existed; fixed in `mission_planning.py`.
+
+26. Scenario:
+Inspect a healthy car and list damaged cars after a damage event.
+- Modules involved: Garage, Inventory
+- Why needed: Verifies new garage diagnostics can guide maintenance and track repair queue.
+- Expected result: Healthy car shows `race_ready`; damaged list includes newly damaged car.
+- Actual result: Pass.
+- Errors/issues found: None.
+
+27. Scenario:
+Perform maintenance on a non-damaged car with mechanic present.
+- Modules involved: Garage, Crew Management, Inventory
+- Why needed: Validates preventive maintenance path and its prerequisites.
+- Expected result: Car condition increases; damaged cars cannot be maintained.
+- Actual result: Pass.
+- Errors/issues found: None.
+
+28. Scenario:
+Install spare parts to improve condition and consume inventory stock.
+- Modules involved: Garage, Crew Management, Inventory
+- Why needed: Confirms resource consumption and validation for garage upgrades.
+- Expected result: Spare parts decrease, condition improves, invalid `parts_required` rejected.
+- Actual result: Pass.
+- Errors/issues found: None.
+
+29. Scenario:
+Store race history and fetch completed result summary.
+- Modules involved: Results, Race Management, Inventory
+- Why needed: Ensures completed race data can be retrieved for reporting/audit.
+- Expected result: Stored summary matches recorded winner, final order, prize, and damaged cars.
+- Actual result: Pass.
+- Errors/issues found: None.
+
+30. Scenario:
+Use results leaderboard with top-N filtering and argument validation.
+- Modules involved: Results
+- Why needed: Verifies ranking view utility and invalid input handling.
+- Expected result: `top_n=2` returns two highest-ranked drivers; `top_n=0` is rejected.
+- Actual result: Pass.
+- Errors/issues found: Initial test setup order issue (missing car before entry) detected and fixed in test data preparation.
+
+31. Scenario:
+Accumulate per-driver stats across multiple races.
+- Modules involved: Results, Race Management
+- Why needed: Confirms race outcomes correctly build long-term performance stats.
+- Expected result: Races, wins, podiums, and points accumulate correctly; unknown driver returns zeroed stats.
+- Actual result: Pass.
+- Errors/issues found: None.
+
 ## 2.3 Call Flow Summary (Simple)
 - Registration -> Crew Management: member must exist first.
 - Crew Management + Inventory -> Race Management: valid driver role and undamaged car required.
@@ -249,4 +337,6 @@ Reputation validation and leaderboard ordering after race points.
 - Mission Planning -> Inventory: mission rewards modify cash.
 
 ## 2.4 Conclusion
-The integrated StreetRace Manager system satisfies all required module behaviors and interaction rules listed in the assignment. The integration test suite confirms module-to-module data flow and rule enforcement with 20/20 passing tests.
+The integrated StreetRace Manager system satisfies all required module behaviors and interaction rules listed in the assignment. The integration test suite confirms module-to-module data flow and rule enforcement with 31/31 passing tests.
+
+Call graph requirement note: the assignment asks for a hand-drawn call graph image. Ensure you place your final image in `integration/diagrams/` and reference it in the report submission.

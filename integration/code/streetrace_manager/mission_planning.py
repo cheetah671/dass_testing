@@ -51,6 +51,8 @@ class MissionPlanningModule:
         mission = self.get_mission(mission_id)
         if mission is None:
             raise ValueError("Mission not found.")
+        if mission.completed:
+            raise ValueError("Mission is already completed.")
         if not self.can_start_mission(mission_id):
             return False
         mission.started = True
@@ -63,6 +65,8 @@ class MissionPlanningModule:
             raise ValueError("Mission not found.")
         if not mission.started:
             raise ValueError("Mission must be started before completion.")
+        if mission.completed:
+            raise ValueError("Mission is already completed.")
         mission.completed = True
         if reward_money > 0:
             self.inventory.add_cash(reward_money)

@@ -31,6 +31,10 @@ class RaceManagementModule:
             raise ValueError("Cannot enter a completed race.")
         if not self.crew.has_role(driver_name, "driver"):
             raise ValueError("Only crew members with driver role may enter a race.")
+        if driver_name in race.participants:
+            raise ValueError("Driver is already entered in this race.")
+        if car_id in race.car_assignments.values():
+            raise ValueError("Car is already assigned in this race.")
         car = self.inventory.get_car(car_id)
         if car is None:
             raise ValueError("Car not found in inventory.")
