@@ -1,6 +1,5 @@
 """Banking logic for funds collection, payouts, and emergency loans."""
 
-import math
 from moneypoly.config import BANK_STARTING_FUNDS
 
 
