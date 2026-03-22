@@ -217,4 +217,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 16: Add module docstring in game.py to fix C0114 (missing-module-docstring)`
 
+## Iteration 17 - `game.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/game.py`
+- Warning fixed in this iteration:
+	- `W0611`: unused import (`os`)
+- Changes made:
+	- Removed `import os` from the top of `game.py`.
+	- No runtime behavior changes.
+- Score change: `8.73/10 -> 8.75/10`
+- Commit message used:
+	- `Iteration 17: Remove unused os import in game.py to fix W0611 (unused-import)`
+
 

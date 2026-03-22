@@ -1,7 +1,5 @@
 """Core game loop and turn-by-turn rules processing for MoneyPoly."""
 
-import os
-
 from moneypoly.config import (
     GO_TO_JAIL_POSITION,
     JAIL_FINE,
