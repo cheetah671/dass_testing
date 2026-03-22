@@ -339,4 +339,3 @@ Accumulate per-driver stats across multiple races.
 ## 2.4 Conclusion
 The integrated StreetRace Manager system satisfies all required module behaviors and interaction rules listed in the assignment. The integration test suite confirms module-to-module data flow and rule enforcement with 31/31 passing tests.
 
-Call graph requirement note: the assignment asks for a hand-drawn call graph image. Ensure you place your final image in `integration/diagrams/` and reference it in the report submission.
