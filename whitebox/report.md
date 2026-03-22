@@ -329,4 +329,17 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 24: Remove unused old_position variable in player.py to fix W0612 (unused-variable)`
 
+## Iteration 25 - `player.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/player.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/player.py`
+- Warning fixed in this iteration:
+	- `C0304`: missing final newline
+- Changes made:
+	- Added trailing newline at end of `player.py`.
+	- No code logic changes.
+- Score change: `8.26/10 -> 8.48/10`
+- Commit message used:
+	- `Iteration 25: Add final newline in player.py to fix C0304 (missing-final-newline)`
+
 
