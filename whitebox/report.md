@@ -461,4 +461,16 @@ Scope: `whitebox/moneypoly/moneypoly` (iterative file-by-file pylint fixes)
 - Commit message used:
 	- `Iteration 34: Add targeted class pragma in property.py to fix R0902 (too-many-instance-attributes)`
 
+## Iteration 35 - `ui.py`
+
+- File: `whitebox/moneypoly/moneypoly/moneypoly/ui.py`
+- Pylint command: `pylint whitebox/moneypoly/moneypoly/moneypoly/ui.py`
+- Warning fixed in this iteration:
+	- `C0114`: missing module docstring
+- Changes made:
+	- Added module-level docstring: `"""Console UI helpers for displaying MoneyPoly game state and prompts."""`
+- Score change: `9.55/10 -> 9.77/10`
+- Commit message used:
+	- `Iteration 35: Add module docstring in ui.py to fix C0114 (missing-module-docstring)`
+
 
