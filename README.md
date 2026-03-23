@@ -15,17 +15,17 @@ dass_testing/
 	README.md
 	blackbox/
 		tests/
-		report.md
-		QuickCart System.md
-		quickcart_image_x86.tar
+		report.pdf
 	integration/
 		code/
 		tests/
-		report.md
+		diagrams/
+		report.pdf
 	whitebox/
 		moneypoly/
 		tests/
-		report.md
+		diagrams/
+		report.pdf
 ```
 
 ---
